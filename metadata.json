@@ -1,0 +1,7 @@
+{
+  "uuid": "static-bg@jianzcar.github",
+  "name": "Static Background for Workspace Animation",
+  "description": "Keeps the desktop background static while switching workspaces (GNOME 48+)",
+  "version": 1,
+  "shell-version": ["48"]
+}
