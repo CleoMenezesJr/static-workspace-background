@@ -64,11 +64,10 @@ export default class Extension {
     childAddedSignal = Main.uiGroup.connect('child-added', (_, actor) => {
       if (actor?.name === 'bms-animation-backgroundgroup') {
         actor.visible = false;
-        log('[static-bg] Hiding Blur My Shell workspace transition blur');
       }
     });
 
-    log(`[static-bg] enabled`);
+    console.log(`[static-workspace-background] enabled`);
   }
 
   disable() {
@@ -83,6 +82,6 @@ export default class Extension {
     WorkspaceAnimation.MonitorGroup.prototype._init = _origMonitorInit;
     _origMonitorInit = null;
 
-    log(`[static-bg] disabled`);
+    console.log(`[static-workspace-background] disabled`);
   }
 }
