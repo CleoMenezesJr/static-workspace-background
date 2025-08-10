@@ -1,7 +1,14 @@
 {
-  "uuid": "static-bg@jianzcar.github",
-  "name": "Static Background for Workspace Animation",
-  "description": "Keeps the desktop background static while switching workspaces (GNOME 48+)",
-  "version": 1,
-  "shell-version": ["48"]
+  "uuid": "static-workspace-background@CleoMenezesJr.github.io",
+  "name": "Static Workspace Background",
+  "description": "Keep a static background while changing workspaces in GNOME",
+  "shell-version": ["49"],
+  "url": "https://github.com/CleoMenezesJr/static-workspace-background",
+  "original-author": "G-dH@github.io",
+  "donations": {
+    "github": "CleoMenezesJr",
+    "kofi": "cleomenezesjr",
+    "paypal": "CleoMenezesJr"
+  },
+  "version-name": "49.0"
 }
