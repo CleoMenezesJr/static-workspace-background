@@ -71,8 +71,6 @@ export default class Extension {
   }
 
   disable() {
-    if (!_origMonitorInit) return;
-
     if (childAddedSignal) {
       Main.uiGroup.disconnect(childAddedSignal);
       childAddedSignal = null;
