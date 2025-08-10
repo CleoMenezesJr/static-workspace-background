@@ -1,9 +1,12 @@
 'use strict';
 
 /**
- * static-bg@yourname
- * GNOME Shell 48 Extension
+ * static-workspace-background@CleoMenezesJr.github.io
+ * GNOME Shell Extension
  * Keep a static background while changing workspaces in GNOME 
+ * @author     GdH <G-dH@github.com>, JianZcar <static-bg@jianzcar.github>
+ * @copyright  2022 - 2025
+ * @license    GPL-3.0
  */
 
 import * as WorkspaceAnimation from 'resource:///org/gnome/shell/ui/workspaceAnimation.js';
