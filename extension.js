@@ -3,7 +3,7 @@
 /**
  * static-bg@yourname
  * GNOME Shell 48 Extension
- * Keeps the wallpaper static during workspace switching
+ * Keep a static background while changing workspaces in GNOME 
  */
 
 import * as WorkspaceAnimation from 'resource:///org/gnome/shell/ui/workspaceAnimation.js';
