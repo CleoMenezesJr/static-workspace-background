@@ -2,7 +2,7 @@
   "uuid": "static-workspace-background@CleoMenezesJr.github.io",
   "name": "Static Workspace Background",
   "description": "Keep a static background while changing workspaces in GNOME.\n\nThis extension is a fork of the V-Shell extension.",
-  "shell-version": ["48", "49"],
+  "shell-version": ["48", "49", "50"],
   "url": "https://github.com/CleoMenezesJr/static-workspace-background",
   "original-author": "G-dH@github.io",
   "donations": {
@@ -10,5 +10,5 @@
     "kofi": "cleomenezesjr",
     "paypal": "CleoMenezesJr"
   },
-  "version-name": "49.0"
+  "version-name": "50.0"
 }
