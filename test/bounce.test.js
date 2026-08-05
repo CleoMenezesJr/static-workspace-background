@@ -36,6 +36,6 @@ test('no-op switch (target == current) does NOT bounce', () => {
 
 test('overshoot magnitude stays near ~1% of baseDistance', () => {
     const r = bounce(250, 1, 0);
-    const dPx = Math.abs(r.intermediate - 1) * 1540; // 1540 ≈ a 1440px screen + spacing
+    const dPx = Math.abs(r.intermediate - 1) * 1540;
     assert.ok(dPx >= 12 && dPx <= 16, `overshoot ${dPx}px outside [12,16]`);
 });

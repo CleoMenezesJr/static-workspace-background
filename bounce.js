@@ -1,19 +1,17 @@
-// Pure bounce math for workspace switches. No GI imports on purpose:
-// unit-testable with plain Node.
-// GNOME's stock settle uses duration <= 250ms; anything longer (a slow
-// touchpad drag, clamped to ~400ms) is "gradual" and must NOT bounce.
+// Fast switches overshoot past the landing spot and settle back; switches
+// slower than BOUNCE_MAX_MS move straight there.
 
-export const BOUNCE_MAX_MS = 300;    // settle durations above this: no bounce
-export const OVER_OVERSHOOT_PX = 14; // overshoot past rest position (≈1% of a 1440px screen)
-export const SLIDE_FACTOR = 0.75;    // phase 1 duration = params.duration * SLIDE_FACTOR
-export const RETURN_MS = 130;        // phase 2 duration
+export const BOUNCE_MAX_MS = 300;
+export const OVER_OVERSHOOT_PX = 14;
+export const SLIDE_FACTOR = 0.75;
+export const RETURN_MS = 130;
 
 export function computeBounceParams({duration, target, current = 0, baseDistance = 1}) {
     if (duration === undefined || duration <= 0 || duration > BOUNCE_MAX_MS)
         return null;
 
     const delta = target - current;
-    if (Math.abs(delta) < Number.EPSILON) // no-op switch (target == current)
+    if (Math.abs(delta) < Number.EPSILON)
         return null;
 
     const intermediate = target + Math.sign(delta) * (OVER_OVERSHOOT_PX / baseDistance);
