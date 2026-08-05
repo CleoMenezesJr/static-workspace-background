@@ -1,12 +1,12 @@
-'use strict';
-
-/**
- * static-workspace-background@CleoMenezesJr.github.io
- * GNOME Shell Extension
- * Keep a static background while changing workspaces in GNOME
- * @author     GdH <G-dH@github.com>, JianZcar <static-bg@jianzcar.github>
- * @copyright  2022 - 2025
- * @license    GPL-3.0
+/*
+ * Static Workspace Background extension for GNOME Shell 48+
+ * Copyright 2026 Cleo Menezes Jr.
+ *
+ * Based on V-Shell
+ * Copyright 2022-2025 GdH and JianZcar
+ *
+ * This software is released under the GNU General Public License v3 or later.
+ * See <http://www.gnu.org/licenses/> for details.
  */
 
 import * as WorkspaceAnimation from 'resource:///org/gnome/shell/ui/workspaceAnimation.js';
