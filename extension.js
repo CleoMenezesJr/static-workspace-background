@@ -11,9 +11,13 @@
 
 import * as WorkspaceAnimation from 'resource:///org/gnome/shell/ui/workspaceAnimation.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import Clutter from 'gi://Clutter';
 import Meta from 'gi://Meta';
 
+import { computeBounceParams } from './bounce.js';
+
 let _origMonitorInit = null;
+let _origEaseProperty = null;
 let _groupsActive = 0;
 let _childAddedId = null;
 
@@ -56,6 +60,40 @@ export default class Extension {
       _groupsActive++;
     };
 
+    // Fast switches get a brief bounce; slow gestures
+    // (duration > BOUNCE_MAX_MS) settle without it.
+    _origEaseProperty = WorkspaceAnimation.MonitorGroup.prototype.ease_property;
+    WorkspaceAnimation.MonitorGroup.prototype.ease_property = function(property, value, params = {}) {
+      const bounce = property === 'progress'
+        ? computeBounceParams({
+            duration: params.duration,
+            target: value,
+            current: this.progress,
+            baseDistance: this.baseDistance,
+          })
+        : null;
+
+      if (bounce) {
+        console.log(`[static-workspace-background] bounce ${bounce.slideDuration}ms +${bounce.returnDuration}ms`);
+        _origEaseProperty.call(this, property, bounce.intermediate, {
+          duration: bounce.slideDuration,
+          mode: Clutter.AnimationMode.EASE_OUT_CUBIC,
+          onComplete: () => {
+            if (this.get_stage() === null)
+              return;
+            _origEaseProperty.call(this, property, bounce.target, {
+              duration: bounce.returnDuration,
+              mode: Clutter.AnimationMode.EASE_IN_OUT_CUBIC,
+              onComplete: params.onComplete,
+            });
+          },
+        });
+        return;
+      }
+
+      _origEaseProperty.call(this, property, value, params);
+    };
+
     // GNOME never puts a wallpaper panel on the uiGroup by itself. When another
     // extension does, we hide it so only the real wallpaper stays visible, without
     // naming or importing that extension.
@@ -76,6 +114,11 @@ export default class Extension {
 
     WorkspaceAnimation.MonitorGroup.prototype._init = _origMonitorInit;
     _origMonitorInit = null;
+
+    if (_origEaseProperty) {
+      WorkspaceAnimation.MonitorGroup.prototype.ease_property = _origEaseProperty;
+      _origEaseProperty = null;
+    }
 
     console.log(`[static-workspace-background] disabled`);
   }

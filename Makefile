@@ -1,5 +1,5 @@
 UUID := static-workspace-background@CleoMenezesJr.github.io
-SRC := extension.js metadata.json
+SRC := extension.js bounce.js metadata.json
 DEST := $(HOME)/.local/share/gnome-shell/extensions/$(UUID)
 
 .PHONY: install uninstall
