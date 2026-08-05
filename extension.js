@@ -3,7 +3,7 @@
 /**
  * static-workspace-background@CleoMenezesJr.github.io
  * GNOME Shell Extension
- * Keep a static background while changing workspaces in GNOME 
+ * Keep a static background while changing workspaces in GNOME
  * @author     GdH <G-dH@github.com>, JianZcar <static-bg@jianzcar.github>
  * @copyright  2022 - 2025
  * @license    GPL-3.0
@@ -11,35 +11,30 @@
 
 import * as WorkspaceAnimation from 'resource:///org/gnome/shell/ui/workspaceAnimation.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import Meta from 'gi://Meta';
 
 let _origMonitorInit = null;
-let childAddedSignal = null;
+let _groupsActive = 0;
+let _childAddedId = null;
 
 export default class Extension {
   enable() {
-    // Don’t double‑patch
     if (_origMonitorInit) return;
 
-    // Save original
     _origMonitorInit = WorkspaceAnimation.MonitorGroup.prototype._init;
 
-    // Patch in our version
     WorkspaceAnimation.MonitorGroup.prototype._init = function(monitor, workspaceIndices, movingWindow) {
-      // First call the stock initializer
       _origMonitorInit.call(this, monitor, workspaceIndices, movingWindow);
 
-      // === Start static‑bg tweaks ===
-
-      // 1) Make the overlay transparent so the real wallpaper stays
+      // Transparent overlay, hidden cloned wallpapers: only the real wallpaper stays.
       this.set_style('background-color: transparent;');
-
-      // 2) Hide all the cloned wallpaper actors
       this._workspaceGroups.forEach(group => {
         if (group._background)
           group._background.opacity = 0;
       });
 
-      // 3) Scale down the originals so only clones animate
+      // Clutter.Clone paints the source regardless of its own scale, so scaling
+      // the originals to zero hides them while their clones keep sliding.
       this._hiddenWindows = [];
       global.get_window_actors().forEach(actor => {
         const mw = actor.metaWindow;
@@ -50,19 +45,22 @@ export default class Extension {
         }
       });
 
-      // 4) When the animation finishes (MonitorGroup is destroyed), restore scales
       this.connect('destroy', () => {
+        _groupsActive--;
         this._hiddenWindows.forEach(actor => {
           actor.scale_x = 1;
           actor.scale_y = 1;
         });
       });
 
-      // === End static‑bg tweaks ===
+      _groupsActive++;
     };
 
-    childAddedSignal = Main.uiGroup.connect('child-added', (_, actor) => {
-      if (actor?.name === 'bms-animation-backgroundgroup') {
+    // GNOME never puts a wallpaper panel on the uiGroup by itself. When another
+    // extension does, we hide it so only the real wallpaper stays visible, without
+    // naming or importing that extension.
+    _childAddedId = Main.uiGroup.connect('child-added', (_, actor) => {
+      if (_groupsActive > 0 && actor instanceof Meta.BackgroundGroup) {
         actor.visible = false;
       }
     });
@@ -71,12 +69,11 @@ export default class Extension {
   }
 
   disable() {
-    if (childAddedSignal) {
-      Main.uiGroup.disconnect(childAddedSignal);
-      childAddedSignal = null;
+    if (_childAddedId) {
+      Main.uiGroup.disconnect(_childAddedId);
+      _childAddedId = null;
     }
 
-    // Restore original
     WorkspaceAnimation.MonitorGroup.prototype._init = _origMonitorInit;
     _origMonitorInit = null;
 
