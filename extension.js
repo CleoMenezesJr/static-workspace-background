@@ -39,22 +39,37 @@ export default class Extension {
 
       // Clutter.Clone paints the source regardless of its own scale, so scaling
       // the originals to zero hides them while their clones keep sliding.
+      // Other extensions may pin per-frame transforms on window actors (e.g.
+      // Mosaic's MiniatureEnforceEffect), which would undo that scale mid-switch;
+      // detach their effects for the duration and restore them on destroy.
       this._hiddenWindows = [];
       global.get_window_actors().forEach(actor => {
         const mw = actor.metaWindow;
         if (mw?.get_monitor() === monitor.index) {
+          const effects = actor.get_effects() ?? [];
+          effects.forEach(e => actor.remove_effect(e));
+          this._hiddenWindows.push({actor, scaleX: actor.scale_x, scaleY: actor.scale_y, effects});
           actor.scale_x = 0;
           actor.scale_y = 0;
-          this._hiddenWindows.push(actor);
         }
       });
 
+      // Non-window children of window_group (e.g. Mosaic's icon overlays) sit
+      // on top and ignore the scale trick; fade those by type so the static
+      // icon doesn't linger while the real window's clone slides.
+      this._hiddenOverlays = global.window_group.get_children()
+        .filter(child => child.constructor?.$gtype?.name === 'MosaicMiniatureClickOverlay')
+        .map(o => ({actor: o, opacity: o.opacity}));
+      this._hiddenOverlays.forEach(({actor}) => { actor.opacity = 0; });
+
       this.connect('destroy', () => {
         _groupsActive--;
-        this._hiddenWindows.forEach(actor => {
-          actor.scale_x = 1;
-          actor.scale_y = 1;
+        this._hiddenWindows.forEach(({actor, scaleX, scaleY, effects}) => {
+          actor.scale_x = scaleX;
+          actor.scale_y = scaleY;
+          effects.forEach(e => actor.add_effect(e));
         });
+        this._hiddenOverlays.forEach(({actor, opacity}) => { actor.opacity = opacity; });
       });
 
       _groupsActive++;
