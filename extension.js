@@ -13,6 +13,7 @@ import * as WorkspaceAnimation from 'resource:///org/gnome/shell/ui/workspaceAni
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import Clutter from 'gi://Clutter';
 import Meta from 'gi://Meta';
+import St from 'gi://St';
 
 import { computeBounceParams } from './bounce.js';
 
@@ -76,10 +77,14 @@ export default class Extension {
     };
 
     // Fast switches get a brief bounce; slow gestures
-    // (duration > BOUNCE_MAX_MS) settle without it.
+    // (duration > BOUNCE_MAX_MS) settle without it. Reduced motion
+    // disables the bounce.
     _origEaseProperty = WorkspaceAnimation.MonitorGroup.prototype.ease_property;
     WorkspaceAnimation.MonitorGroup.prototype.ease_property = function(property, value, params = {}) {
-      const bounce = property === 'progress'
+      const reducedMotion = St.Settings.get().reducedMotion;
+      const reduce = St.ReducedMotion?.REDUCE !== undefined &&
+        reducedMotion === St.ReducedMotion.REDUCE;
+      const bounce = !reduce && property === 'progress'
         ? computeBounceParams({
             duration: params.duration,
             target: value,
@@ -109,7 +114,7 @@ export default class Extension {
       _origEaseProperty.call(this, property, value, params);
     };
 
-    // GNOME never puts a wallpaper panel on the uiGroup by itself. When another
+    // GNOME doesn't put a wallpaper panel on the uiGroup. When another
     // extension does, we hide it so only the real wallpaper stays visible, without
     // naming or importing that extension.
     _childAddedId = Main.uiGroup.connect('child-added', (_, actor) => {
