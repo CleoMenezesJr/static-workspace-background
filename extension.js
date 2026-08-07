@@ -92,7 +92,7 @@ export default class Extension {
         console.log(`[static-workspace-background] bounce ${bounce.slideDuration}ms +${bounce.returnDuration}ms`);
         _origEaseProperty.call(this, property, bounce.intermediate, {
           duration: bounce.slideDuration,
-          mode: Clutter.AnimationMode.EASE_OUT_CUBIC,
+          mode: Clutter.AnimationMode.EASE_OUT_SINE,
           onComplete: () => {
             if (this.get_stage() === null)
               return;
