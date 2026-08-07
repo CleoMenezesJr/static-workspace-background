@@ -10,7 +10,7 @@ Keep a static background while changing workspaces in GNOME
 
 ## Installation
 
-This extension is available on **GNOME 49** or newer versions.
+This extension is available on **GNOME 51** or newer versions.
 
 ### GNOME Extensions
 
