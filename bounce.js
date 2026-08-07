@@ -1,5 +1,5 @@
-// Fast switches overshoot past the landing spot and settle back; switches
-// slower than BOUNCE_MAX_MS move straight there.
+// Fast switches overshoot the landing spot and settle back; slower ones
+// move straight there.
 
 export const BOUNCE_MAX_MS = 300;
 export const OVER_OVERSHOOT_PX = 14;
@@ -14,11 +14,11 @@ export function computeBounceParams({duration, target, current = 0, baseDistance
     if (Math.abs(delta) < Number.EPSILON)
         return null;
 
-    const intermediate = target + Math.sign(delta) * (OVER_OVERSHOOT_PX / baseDistance);
-
+// Overshoot in pixels; progress outside [0,1] becomes NaN in the shell's
+// workspaces adjustment.
     return {
-        intermediate,
         target,
+        overshootPx: Math.sign(delta) * OVER_OVERSHOOT_PX,
         slideDuration: Math.round(duration * SLIDE_FACTOR),
         returnDuration: RETURN_MS,
     };

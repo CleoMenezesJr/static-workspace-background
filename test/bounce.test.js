@@ -11,7 +11,7 @@ function bounce(duration, target, current) {
 test('keyboard switch (250ms) bounces and overshoots in the travel direction', () => {
     const r = bounce(250, 1, 0);
     assert.ok(r);
-    assert.ok(r.intermediate > r.target, 'overshoots forward');
+    assert.ok(r.overshootPx > 0, 'overshoots forward');
     assert.equal(r.target, 1);
     assert.equal(r.slideDuration, 188);  // Math.round(250 * 0.75)
     assert.equal(r.returnDuration, 130);
@@ -19,7 +19,7 @@ test('keyboard switch (250ms) bounces and overshoots in the travel direction', (
 
 test('reverse direction overshoots below the target', () => {
     const r = bounce(250, 0, 1);
-    assert.ok(r.intermediate < r.target, 'overshoots backwards');
+    assert.ok(r.overshootPx < 0, 'overshoots backwards');
 });
 
 test('slow gesture settle (400ms clamped) does NOT bounce', () => {
@@ -34,8 +34,8 @@ test('no-op switch (target == current) does NOT bounce', () => {
     assert.equal(bounce(250, 1, 1), null);
 });
 
-test('overshoot magnitude stays near ~1% of baseDistance', () => {
+test('overshoot magnitude stays ~1% of baseDistance', () => {
     const r = bounce(250, 1, 0);
-    const dPx = Math.abs(r.intermediate - 1) * 1540;
-    assert.ok(dPx >= 12 && dPx <= 16, `overshoot ${dPx}px outside [12,16]`);
+    assert.ok(Math.abs(r.overshootPx) >= 12 && Math.abs(r.overshootPx) <= 16,
+        `overshoot ${r.overshootPx}px outside [12,16]`);
 });
