@@ -95,7 +95,6 @@ export default class Extension {
             duration: params.duration,
             target: value,
             current: this.progress,
-            baseDistance: this.baseDistance,
           })
         : null;
 

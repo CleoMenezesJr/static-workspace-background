@@ -6,7 +6,7 @@ export const OVER_OVERSHOOT_PX = 14;
 export const SLIDE_FACTOR = 0.75;
 export const RETURN_MS = 130;
 
-export function computeBounceParams({duration, target, current = 0, baseDistance = 1}) {
+export function computeBounceParams({duration, target, current = 0}) {
     if (duration === undefined || duration <= 0 || duration > BOUNCE_MAX_MS)
         return null;
 

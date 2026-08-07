@@ -2,10 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { computeBounceParams } from '../bounce.js';
 
-const BASE = 1540; // px-per-progress-unit: ≈ a 1440px screen + spacing, keeps overshoot in px
-
 function bounce(duration, target, current) {
-    return computeBounceParams({duration, target, current, baseDistance: BASE});
+    return computeBounceParams({duration, target, current});
 }
 
 test('keyboard switch (250ms) bounces and overshoots in the travel direction', () => {
@@ -34,7 +32,7 @@ test('no-op switch (target == current) does NOT bounce', () => {
     assert.equal(bounce(250, 1, 1), null);
 });
 
-test('overshoot magnitude stays ~1% of baseDistance', () => {
+test('overshoot magnitude stays near OVER_OVERSHOOT_PX (14px)', () => {
     const r = bounce(250, 1, 0);
     assert.ok(Math.abs(r.overshootPx) >= 12 && Math.abs(r.overshootPx) <= 16,
         `overshoot ${r.overshootPx}px outside [12,16]`);
